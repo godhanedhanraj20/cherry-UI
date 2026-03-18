@@ -20,6 +20,7 @@ def _parse_csv_env(raw_value: str):
 
 
 def _mask_db_uri(uri: str) -> str:
+    # safer regex (non-greedy issues avoided)
     masked = re.sub(r"://([^:]+):[^@]+@", r"://\1:*****@", uri)
     return masked.split("?")[0]
 

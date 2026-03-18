@@ -215,6 +215,15 @@ async def stream_handler(
     name: str,
     token_data: dict = Depends(verify_token),
 ):
+    if token_data.get("limit_exceeded"):
+        return JSONResponse(
+            status_code=429,
+            content={
+                "error": "Limit reached",
+                "message": "Your daily or monthly limit has been exceeded."
+            }
+        )
+
     decoded = await decode_string(id)
     msg_id = decoded.get("msg_id")
     if not msg_id:
