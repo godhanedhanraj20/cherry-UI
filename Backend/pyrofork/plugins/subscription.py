@@ -20,7 +20,7 @@ async def plan_selection(client: Client, callback_query: CallbackQuery):
     if not plan:
         return await callback_query.answer("Invalid plan.", show_alert=True)
         
-    duration = plan["days"]
+    duration = plan.get("validity_days", plan.get("days", 0))
     await callback_query.answer()
     
     user_id = callback_query.from_user.id if callback_query.from_user else callback_query.message.chat.id
@@ -41,15 +41,31 @@ async def plan_selection(client: Client, callback_query: CallbackQuery):
         new_expiry = now + timedelta(days=int(duration))
 
     expiry_str = new_expiry.strftime("%Y-%m-%d %H:%M UTC")
+    plan_name = plan.get("name", f"{plan.get('validity_days', plan.get('days', 0))} Days")
+    validity = duration
+    daily = plan.get("daily_limit_gb", 0)
+    monthly = plan.get("monthly_limit_gb", 0)
+    upi_id = getattr(Telegram, "UPI_ID", "").strip()
+    payment_block = (
+        f"UPI ID: <code>{upi_id}</code>"
+        if upi_id else
+        "⚠️ Payment details not configured. Please contact admin."
+    )
 
     text = (
-        f"<b>✅ Plan Selected: {plan['days']} Days</b>\n\n"
+        f"<b>✅ Plan Selected: {plan_name}</b>\n\n"
         f"<b>💰 Price:</b> ₹{plan['price']}\n"
-        f"<b>📅 Expiry (if approved now):</b> {expiry_str}\n\n"
-        f"<b>📋 Payment Instructions:</b>\n"
-        f"1. Pay ₹{plan['price']} to the admin.\n"
-        f"2. <b>Send your payment screenshot directly here (in this chat)</b>.\n"
-        f"   The admin will review and activate your subscription."
+        f"<b>📅 Validity:</b> {validity} days\n"
+        f"<b>⏳ Expiry (if approved now):</b> {expiry_str}\n"
+        f"<b>📊 Limits:</b>\n"
+        f"  • Daily: {daily} GB\n"
+        f"  • Monthly: {monthly} GB\n\n"
+        f"<b>💳 Payment (UPI):</b>\n"
+        f"{payment_block}\n\n"
+        f"<b>📋 Steps:</b>\n"
+        f"1. Pay ₹{plan['price']} via UPI.\n"
+        f"2. Send payment screenshot here in this chat.\n"
+        f"3. Wait for admin approval.\n"
     )
 
     # Set pending payment state (price stored for admin display)
