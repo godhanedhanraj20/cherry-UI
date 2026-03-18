@@ -104,9 +104,14 @@
                 <form id="plan-form" onsubmit="submitPlanForm(event)">
                     <input type="hidden" id="plan-id">
                     <div class="mb-4">
-                        <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Duration
-                            (Days)</label>
-                        <input type="number" id="plan-days"
+                        <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Plan Name</label>
+                        <input type="text" id="plan-name"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                            required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Validity Days</label>
+                        <input type="number" id="plan-validity-days"
                             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
                             required min="1">
                     </div>
@@ -115,6 +120,18 @@
                         <input type="number" id="plan-price"
                             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
                             required min="0" step="0.01">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Daily Limit (GB)</label>
+                        <input type="number" id="plan-daily-limit"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                            required min="0" step="0.01" value="0">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Monthly Limit (GB)</label>
+                        <input type="number" id="plan-monthly-limit"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                            required min="0" step="0.01" value="0">
                     </div>
                     <div class="flex justify-end gap-2 mt-6">
                         <button type="button" onclick="closePlanModal()"
@@ -174,7 +191,14 @@
                 container.innerHTML = plans.map(p => `
           <div class="theme-card rounded-xl border p-6 shadow-sm relative group">
             <div class="absolute right-4 top-4 hidden group-hover:flex gap-2">
-              <button onclick="openPlanModal('${p._id}', ${p.days}, ${p.price})" class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button>
+              <button onclick="openPlanModal(
+                '${p._id}',
+                '${(p.name || `${(p.validity_days ?? p.days ?? 0)} Days`).replace(/'/g, "\\'")}',
+                ${parseInt(p.validity_days ?? p.days ?? 0) || 0},
+                ${parseFloat(p.price ?? 0) || 0},
+                ${parseFloat(p.daily_limit_gb ?? 0) || 0},
+                ${parseFloat(p.monthly_limit_gb ?? 0) || 0}
+              )" class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button>
               <button onclick="deletePlan('${p._id}')" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
             </div>
             <div class="flex items-center">
@@ -182,7 +206,9 @@
                 <i class="fas fa-calendar-alt text-xl text-yellow-600 dark:text-yellow-400"></i>
               </div>
               <div class="ml-4">
-                <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">${p.days} Days Plan</h3>
+                <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">${p.name || `${(p.validity_days ?? p.days ?? 0)} Days Plan`}</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400">${parseInt(p.validity_days ?? p.days ?? 0) || 0} days validity</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Daily: ${parseFloat(p.daily_limit_gb ?? 0) || 0} GB • Monthly: ${parseFloat(p.monthly_limit_gb ?? 0) || 0} GB</p>
                 <p class="text-2xl font-bold text-gray-900 dark:text-white">₹${p.price}</p>
               </div>
             </div>
@@ -191,10 +217,13 @@
         } catch (err) { console.error(err); }
     }
 
-    function openPlanModal(id = '', days = '', price = '') {
+    function openPlanModal(id = '', name = '', validityDays = '', price = '', dailyLimit = 0, monthlyLimit = 0) {
         document.getElementById('plan-id').value = id;
-        document.getElementById('plan-days').value = days;
+        document.getElementById('plan-name').value = name;
+        document.getElementById('plan-validity-days').value = validityDays;
         document.getElementById('plan-price').value = price;
+        document.getElementById('plan-daily-limit').value = dailyLimit;
+        document.getElementById('plan-monthly-limit').value = monthlyLimit;
         document.getElementById('plan-modal-title').innerText = id ? 'Edit Plan' : 'Add New Plan';
         document.getElementById('plan-modal').classList.remove('hidden');
     }
@@ -203,7 +232,14 @@
     async function submitPlanForm(e) {
         e.preventDefault();
         const id = document.getElementById('plan-id').value;
-        const payload = { days: parseInt(document.getElementById('plan-days').value), price: parseFloat(document.getElementById('plan-price').value) };
+        const validityDays = parseInt(document.getElementById('plan-validity-days').value);
+        const payload = {
+            name: document.getElementById('plan-name').value.trim(),
+            validity_days: validityDays,
+            price: parseFloat(document.getElementById('plan-price').value),
+            daily_limit_gb: parseFloat(document.getElementById('plan-daily-limit').value) || 0,
+            monthly_limit_gb: parseFloat(document.getElementById('plan-monthly-limit').value) || 0
+        };
         const res = await fetch(id ? `/api/admin/subscriptions/plans/${id}` : '/api/admin/subscriptions/plans', {
             method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
         });
