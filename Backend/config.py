@@ -20,7 +20,8 @@ def _parse_csv_env(raw_value: str):
 
 
 def _mask_db_uri(uri: str) -> str:
-    masked = re.sub(r"://(.*?):.*?@", r"://\1:*****@", uri)
+    # safer regex (non-greedy issues avoided)
+    masked = re.sub(r"://([^:]+):[^@]+@", r"://\1:*****@", uri)
     return masked.split("?")[0]
 
 
@@ -56,8 +57,13 @@ class Telegram:
     SUBSCRIPTION = getenv("SUBSCRIPTION", "false").lower() == "true"
     SUBSCRIPTION_GROUP_ID = int(getenv("SUBSCRIPTION_GROUP_ID", "0"))
     SUBSCRIPTION_URL = getenv("SUBSCRIPTION_URL", "https://t.me/")
+
     UPI_ID = getenv("UPI_ID", "")
-    APPROVER_IDS = [int(x.strip()) for x in (getenv("APPROVER_IDS") or "").split(",") if x.strip().isdigit()]
+    APPROVER_IDS = [
+        int(x.strip())
+        for x in (getenv("APPROVER_IDS") or "").split(",")
+        if x.strip().isdigit()
+    ]
 
 
 print(f"[CONFIG] DATABASE URIs loaded: {len(Telegram.DATABASE)}")
