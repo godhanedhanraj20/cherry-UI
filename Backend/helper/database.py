@@ -91,7 +91,15 @@ class Database:
             upsert=True
         )
 
-    async def set_pending_payment(self, user_id: int, plan_duration: int, msg_id: int, price=0, admin_messages: list = None):
+    async def set_pending_payment(
+        self,
+        user_id: int,
+        plan_duration: int,
+        msg_id: int,
+        price=0,
+        admin_messages: list = None,
+        plan_id: str = None
+    ):
         update_data = {
             "pending_payment": {
                 "duration": plan_duration,
@@ -102,6 +110,8 @@ class Database:
         }
         if admin_messages is not None:
             update_data["pending_payment"]["admin_messages"] = admin_messages
+        if plan_id is not None:
+            update_data["pending_payment"]["plan_id"] = plan_id
         await self.dbs["tracking"]["users"].update_one(
             {"_id": user_id},
             {"$set": update_data},
@@ -175,23 +185,70 @@ class Database:
     # Admin Subscription Management
     # -------------------------------
     async def get_subscription_plans(self) -> List[dict]:
-        cursor = self.dbs["tracking"]["sub_plans"].find().sort("days", ASCENDING)
+        pipeline = [
+            {
+                "$addFields": {
+                    "_sort_validity_days": {"$ifNull": ["$validity_days", "$days"]}
+                }
+            },
+            {"$sort": {"_sort_validity_days": ASCENDING, "created_at": ASCENDING}},
+            {"$project": {"_sort_validity_days": 0}},
+        ]
+        cursor = self.dbs["tracking"]["sub_plans"].aggregate(pipeline)
         plans = await cursor.to_list(None)
-        return [convert_objectid_to_str(plan) for plan in plans]
 
-    async def add_subscription_plan(self, days: int, price: float) -> Optional[str]:
+        normalized_plans = []
+        for plan in plans:
+            validity_days = plan.get("validity_days", plan.get("days", 0))
+            plan["validity_days"] = int(validity_days) if validity_days is not None else 0
+            # Backward compatibility for existing callers still using `days`.
+            plan["days"] = plan["validity_days"]
+            plan.setdefault("name", f"{plan['validity_days']} Days")
+            plan.setdefault("daily_limit_gb", 0.0)
+            plan.setdefault("monthly_limit_gb", 0.0)
+            normalized_plans.append(convert_objectid_to_str(plan))
+        return normalized_plans
+
+    async def add_subscription_plan(
+        self,
+        name: str,
+        validity_days: int,
+        price: float,
+        monthly_limit_gb: float = 0.0,
+        daily_limit_gb: float = 0.0
+    ) -> Optional[str]:
+        now = datetime.utcnow()
         result = await self.dbs["tracking"]["sub_plans"].insert_one({
-            "days": days,
+            "name": name,
+            "validity_days": validity_days,
             "price": price,
-            "created_at": datetime.utcnow()
+            "monthly_limit_gb": monthly_limit_gb,
+            "daily_limit_gb": daily_limit_gb,
+            "created_at": now,
+            "updated_at": now
         })
         return str(result.inserted_id)
 
-    async def update_subscription_plan(self, plan_id: str, days: int, price: float) -> bool:
+    async def update_subscription_plan(
+        self,
+        plan_id: str,
+        name: str,
+        validity_days: int,
+        price: float,
+        monthly_limit_gb: float = 0.0,
+        daily_limit_gb: float = 0.0
+    ) -> bool:
         try:
             result = await self.dbs["tracking"]["sub_plans"].update_one(
                 {"_id": ObjectId(plan_id)},
-                {"$set": {"days": days, "price": price, "updated_at": datetime.utcnow()}}
+                {"$set": {
+                    "name": name,
+                    "validity_days": validity_days,
+                    "price": price,
+                    "monthly_limit_gb": monthly_limit_gb,
+                    "daily_limit_gb": daily_limit_gb,
+                    "updated_at": datetime.utcnow()
+                }}
             )
             return result.modified_count > 0
         except Exception:
