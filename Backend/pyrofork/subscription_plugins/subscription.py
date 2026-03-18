@@ -20,7 +20,7 @@ async def plan_selection(client: Client, callback_query: CallbackQuery):
     if not plan:
         return await callback_query.answer("Invalid plan.", show_alert=True)
         
-    duration = plan["days"]
+    duration = plan.get("validity_days", plan.get("days", 0))
     await callback_query.answer()
     
     user_id = callback_query.from_user.id if callback_query.from_user else callback_query.message.chat.id
@@ -41,19 +41,41 @@ async def plan_selection(client: Client, callback_query: CallbackQuery):
         new_expiry = now + timedelta(days=int(duration))
 
     expiry_str = new_expiry.strftime("%Y-%m-%d %H:%M UTC")
+    plan_name = plan.get("name", f"{plan.get('validity_days', plan.get('days', 0))} Days")
+    validity = duration
+    daily = plan.get("daily_limit_gb", 0)
+    monthly = plan.get("monthly_limit_gb", 0)
+    upi_id = getattr(Telegram, "UPI_ID", "").strip()
+    payment_block = (
+        f"UPI ID: <code>{upi_id}</code>"
+        if upi_id else
+        "⚠️ Payment details not configured. Please contact admin."
+    )
 
     text = (
-        f"<b>✅ Plan Selected: {plan['days']} Days</b>\n\n"
+        f"<b>✅ Plan Selected: {plan_name}</b>\n\n"
         f"<b>💰 Price:</b> ₹{plan['price']}\n"
-        f"<b>📅 Expiry (if approved now):</b> {expiry_str}\n\n"
-        f"<b>📋 Payment Instructions:</b>\n"
-        f"1. Pay ₹{plan['price']} to the admin.\n"
-        f"2. <b>Send your payment screenshot directly here (in this chat)</b>.\n"
-        f"   The admin will review and activate your subscription."
+        f"<b>📅 Validity:</b> {validity} days\n"
+        f"<b>⏳ Expiry (if approved now):</b> {expiry_str}\n"
+        f"<b>📊 Limits:</b>\n"
+        f"  • Daily: {daily} GB\n"
+        f"  • Monthly: {monthly} GB\n\n"
+        f"<b>💳 Payment (UPI):</b>\n"
+        f"{payment_block}\n\n"
+        f"<b>📋 Steps:</b>\n"
+        f"1. Pay ₹{plan['price']} via UPI.\n"
+        f"2. Send payment screenshot here in this chat.\n"
+        f"3. Wait for admin approval.\n"
     )
 
     # Set pending payment state (price stored for admin display)
-    await db.set_pending_payment(user_id, int(duration), 0, price=plan.get("price", 0))
+    await db.set_pending_payment(
+        user_id,
+        int(duration),
+        0,
+        price=plan.get("price", 0),
+        plan_id=plan.get("_id")
+    )
 
     # Add cancel button
     keyboard = InlineKeyboardMarkup([
@@ -175,8 +197,14 @@ async def handle_payment_screenshot(client: Client, message: Message):
                 print(f"Failed to forward screenshot to approver {approver_id}: {e}")
 
         # Update pending state with screenshot message ID + all admin message IDs
-        await db.set_pending_payment(sender_id, duration, message.id, price=price,
-                                     admin_messages=admin_messages)
+        await db.set_pending_payment(
+            sender_id,
+            duration,
+            message.id,
+            price=price,
+            admin_messages=admin_messages,
+            plan_id=pending.get("plan_id")
+        )
 
         if admin_messages:
             await message.reply_text(
@@ -219,6 +247,32 @@ async def admin_review(client: Client, callback_query: CallbackQuery):
     admin_messages = user_pre["pending_payment"].get("admin_messages", [])
 
     if action == "approve":
+        pending = user_pre.get("pending_payment", {})
+        duration = pending.get("duration", 0)
+        price = pending.get("price", 0)
+        selected_plan = None
+        try:
+            plans = await db.get_subscription_plans()
+            plan_id = pending.get("plan_id")
+
+            if plan_id:
+                selected_plan = next((p for p in plans if str(p.get("_id")) == str(plan_id)), None)
+
+            if not selected_plan:
+                selected_plan = next(
+                    (
+                        p for p in plans
+                        if int(p.get("validity_days", p.get("days", 0)) or 0) == int(duration or 0)
+                        and float(p.get("price", 0) or 0) == float(price or 0)
+                    ),
+                    None
+                )
+        except Exception:
+            selected_plan = None
+
+        daily_limit_gb = float((selected_plan or {}).get("daily_limit_gb", 0) or 0)
+        monthly_limit_gb = float((selected_plan or {}).get("monthly_limit_gb", 0) or 0)
+
         user_data = await db.approve_payment(target_user_id)
         if user_data:
             # Generate or retrieve existing API token for this user
@@ -227,6 +281,8 @@ async def admin_review(client: Client, callback_query: CallbackQuery):
                 user_name = (user_obj.get("first_name") or user_obj.get("username") or str(target_user_id)) if user_obj else str(target_user_id)
                 token_doc = await db.add_api_token(name=user_name, user_id=target_user_id)
                 token_str = token_doc.get("token")
+                if token_str:
+                    await db.update_api_token_limits(token_str, daily_limit_gb, monthly_limit_gb)
                 addon_url = f"{Telegram.BASE_URL}/stremio/{token_str}/manifest.json"
             except Exception as te:
                 token_str = None

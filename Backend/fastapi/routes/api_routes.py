@@ -485,12 +485,22 @@ async def get_subscription_plans_api() -> dict:
 async def add_subscription_plan_api(payload: dict) -> dict:
     from Backend import db
     try:
-        days = int(payload.get("days", 0))
+        validity_days = int(payload.get("validity_days", payload.get("days", 0)))
         price = float(payload.get("price", 0.0))
-        if days <= 0 or price < 0:
+        name = str(payload.get("name", "")).strip() or f"{validity_days} Days"
+        monthly_limit_gb = float(payload.get("monthly_limit_gb", 0.0))
+        daily_limit_gb = float(payload.get("daily_limit_gb", 0.0))
+
+        if validity_days <= 0 or price < 0 or monthly_limit_gb < 0 or daily_limit_gb < 0:
             raise HTTPException(status_code=400, detail="Invalid plan parameters")
             
-        plan_id = await db.add_subscription_plan(days, price)
+        plan_id = await db.add_subscription_plan(
+            name=name,
+            validity_days=validity_days,
+            price=price,
+            monthly_limit_gb=monthly_limit_gb,
+            daily_limit_gb=daily_limit_gb,
+        )
         if plan_id:
             return {"status": "success", "message": "Plan added successfully", "plan_id": plan_id}
         else:
@@ -503,12 +513,23 @@ async def add_subscription_plan_api(payload: dict) -> dict:
 async def update_subscription_plan_api(plan_id: str, payload: dict) -> dict:
     from Backend import db
     try:
-        days = int(payload.get("days", 0))
+        validity_days = int(payload.get("validity_days", payload.get("days", 0)))
         price = float(payload.get("price", 0.0))
-        if days <= 0 or price < 0:
+        name = str(payload.get("name", "")).strip() or f"{validity_days} Days"
+        monthly_limit_gb = float(payload.get("monthly_limit_gb", 0.0))
+        daily_limit_gb = float(payload.get("daily_limit_gb", 0.0))
+
+        if validity_days <= 0 or price < 0 or monthly_limit_gb < 0 or daily_limit_gb < 0:
              raise HTTPException(status_code=400, detail="Invalid plan parameters")
              
-        success = await db.update_subscription_plan(plan_id, days, price)
+        success = await db.update_subscription_plan(
+            plan_id=plan_id,
+            name=name,
+            validity_days=validity_days,
+            price=price,
+            monthly_limit_gb=monthly_limit_gb,
+            daily_limit_gb=daily_limit_gb,
+        )
         if success:
              return {"status": "success", "message": "Plan updated successfully"}
         else:
