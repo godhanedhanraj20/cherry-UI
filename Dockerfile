@@ -4,6 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 ENV LANG=en_US.UTF-8
 ENV PATH="/app/.venv/bin:$PATH"
+ENV UV_PYTHON=3.12
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -18,7 +19,7 @@ RUN apt-get update && \
 
 WORKDIR /app
 COPY . .
-RUN uv lock
-RUN uv sync --locked
+RUN uv lock --python 3.12
+RUN uv sync --locked --python 3.12
 RUN chmod +x start.sh
 CMD ["bash", "start.sh"]
