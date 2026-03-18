@@ -62,4 +62,4 @@ class Telegram:
 
 print(f"[CONFIG] DATABASE URIs loaded: {len(Telegram.DATABASE)}")
 if Telegram.DATABASE:
-    print(f"[CONFIG] DATABASE URIs (masked): {[ _mask_db_uri(uri) for uri in Telegram.DATABASE ]}")
+    print(f"[CONFIG] DATABASE URIs (masked): {[_mask_db_uri(uri) for uri in Telegram.DATABASE]}")
