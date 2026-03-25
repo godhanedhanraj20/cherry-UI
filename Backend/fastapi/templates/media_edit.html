@@ -424,8 +424,8 @@
     }
 
     // Delete name from movie
-    async function deleteQuality(id) {
-        if (!confirm(`Are you sure you want to delete the ${id} ?`)) return;
+    async function deleteQuality(id, confirmed = false) {
+        if (!confirmed) { openConfirmModal(`Are you sure you want to delete the ${id} ?`, () => deleteQuality(id, true)); return; }
 
         try {
             const response = await fetch(`/api/media/delete-quality?tmdb_id=${tmdbId}&db_index=${dbIndex}&id=${encodeURIComponent(id)}`, {
@@ -446,8 +446,8 @@
     }
 
     // Delete TV quality
-    async function deleteTVQuality(season, episode, id) {
-        if (!confirm(`Are you sure you want to delete the ${id} from Season ${season} Episode ${episode}?`)) return;
+    async function deleteTVQuality(season, episode, id, confirmed = false) {
+        if (!confirmed) { openConfirmModal(`Are you sure you want to delete the ${id} from Season ${season} Episode ${episode}?`, () => deleteTVQuality(season, episode, id, true)); return; }
 
         try {
             const response = await fetch(`/api/media/delete-tv-quality?tmdb_id=${tmdbId}&db_index=${dbIndex}&season=${season}&episode=${episode}&id=${encodeURIComponent(id)}`, {
@@ -468,8 +468,8 @@
     }
 
     // Delete TV episode
-    async function deleteTVEpisode(season, episode) {
-        if (!confirm(`Are you sure you want to delete Season ${season} Episode ${episode}?\n\nThis will remove the entire episode and all its qualities.`)) return;
+    async function deleteTVEpisode(season, episode, confirmed = false) {
+        if (!confirmed) { openConfirmModal(`Are you sure you want to delete Season ${season} Episode ${episode}? This will remove the entire episode and all its qualities.`, () => deleteTVEpisode(season, episode, true)); return; }
 
         try {
             const response = await fetch(`/api/media/delete-tv-episode?tmdb_id=${tmdbId}&db_index=${dbIndex}&season=${season}&episode=${episode}`, {
@@ -490,8 +490,8 @@
     }
 
     // Delete TV season
-    async function deleteTVSeason(season) {
-        if (!confirm(`Are you sure you want to delete the entire Season ${season}?\n\nThis will remove all episodes and qualities in this season. This action cannot be undone.`)) return;
+    async function deleteTVSeason(season, confirmed = false) {
+        if (!confirmed) { openConfirmModal(`Are you sure you want to delete the entire Season ${season}? This will remove all episodes and qualities in this season. This action cannot be undone.`, () => deleteTVSeason(season, true)); return; }
 
         try {
             const response = await fetch(`/api/media/delete-tv-season?tmdb_id=${tmdbId}&db_index=${dbIndex}&season=${season}`, {
@@ -576,8 +576,7 @@
         navigator.clipboard.writeText(url).then(() => {
             showSuccessMessage('Stream link copied to clipboard!');
         }).catch(() => {
-            // Fallback: show the URL in a prompt
-            prompt('Copy this stream link:', url);
+            showToast("Copy failed. Please copy manually.", "error");
         });
     }
 
@@ -640,7 +639,7 @@
             <!-- Results table -->
             <div id="st-results" class="hidden">
                 <div class="overflow-x-auto rounded-xl border border-gray-200">
-                    <table class="w-full text-sm">
+                    <table class="w-full text-sm text-[#e5e7eb]">
                         <thead class="bg-gray-50 text-left">
                             <tr>
                                 <th class="px-4 py-3 font-semibold text-gray-600 text-xs uppercase tracking-wider">Bot /
@@ -807,11 +806,11 @@
                     tr.className = 'animate-pulse';
                     tr.innerHTML = `
                         <td class="px-4 py-3 font-medium text-gray-400">🔄 Bot ${i + 1}</td>
-                        <td class="px-4 py-3"><span class="text-gray-300">testing…</span></td>
-                        <td class="px-4 py-3"><span class="text-gray-300">testing…</span></td>
+                        <td class="px-6 py-4 text-sm text-[#e5e7eb]"><span class="text-gray-300">testing…</span></td>
+                        <td class="px-6 py-4 text-sm text-[#e5e7eb]"><span class="text-gray-300">testing…</span></td>
                         <td class="px-4 py-3 text-gray-300">—</td>
                         <td class="px-4 py-3 text-gray-300">—</td>
-                        <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-400">Pending</span></td>`;
+                        <td class="px-6 py-4 text-sm text-[#e5e7eb]"><span class="px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-400">Pending</span></td>`;
                     tbody.appendChild(tr);
                     pendingRows[i] = tr;
                 }
@@ -835,11 +834,11 @@
                     // Update the innerHTML of the pending row cells
                     tr.innerHTML = `
                         <td class="px-4 py-3 font-medium text-gray-700">🔄 Bot ${r.client_index + 1} &nbsp;<span class="text-xs text-gray-400">(DC&nbsp;${r.dc_id})</span></td>
-                        <td class="px-4 py-3">${ping}</td>
-                        <td class="px-4 py-3">${speed}</td>
+                        <td class="px-6 py-4 text-sm text-[#e5e7eb]">${ping}</td>
+                        <td class="px-6 py-4 text-sm text-[#e5e7eb]">${speed}</td>
                         <td class="px-4 py-3 text-gray-600 text-sm">${taken}</td>
                         <td class="px-4 py-3 text-gray-500 text-xs">${bytes}</td>
-                        <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700 animate-pulse">Running…</span></td>`;
+                        <td class="px-6 py-4 text-sm text-[#e5e7eb]"><span class="px-2 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700 animate-pulse">Running…</span></td>`;
                 }
             }
 
@@ -870,11 +869,11 @@
                 tr.className = `hover:bg-blue-50 transition-colors ${isErr ? 'opacity-60' : ''}`;
                 tr.innerHTML = `
                     <td class="px-4 py-3 font-medium">${medal}${dc}</td>
-                    <td class="px-4 py-3">${ping}</td>
-                    <td class="px-4 py-3">${speed}${isErr ? `<div class="text-xs text-red-500 mt-1">${r.error}</div>` : ''}</td>
+                    <td class="px-6 py-4 text-sm text-[#e5e7eb]">${ping}</td>
+                    <td class="px-6 py-4 text-sm text-[#e5e7eb]">${speed}${isErr ? `<div class="text-xs text-red-500 mt-1">${r.error}</div>` : ''}</td>
                     <td class="px-4 py-3 text-gray-600 text-sm">${taken}</td>
                     <td class="px-4 py-3 text-gray-500 text-xs">${bytes}</td>
-                    <td class="px-4 py-3">${badge}</td>`;
+                    <td class="px-6 py-4 text-sm text-[#e5e7eb]">${badge}</td>`;
 
                 if (pendingRows[r.client_index]) {
                     pendingRows[r.client_index].replaceWith(tr);
@@ -916,11 +915,11 @@
                     tr.className = `hover:bg-blue-50 transition-colors ${isErr ? 'opacity-60' : ''}`;
                     tr.innerHTML = `
                         <td class="px-4 py-3 font-medium">${medal}${dc}</td>
-                        <td class="px-4 py-3">${ping}</td>
-                        <td class="px-4 py-3">${speed}${isErr ? `<div class="text-xs text-red-500 mt-1">${r.error}</div>` : ''}</td>
+                        <td class="px-6 py-4 text-sm text-[#e5e7eb]">${ping}</td>
+                        <td class="px-6 py-4 text-sm text-[#e5e7eb]">${speed}${isErr ? `<div class="text-xs text-red-500 mt-1">${r.error}</div>` : ''}</td>
                         <td class="px-4 py-3 text-gray-600 text-sm">${taken}</td>
                         <td class="px-4 py-3 text-gray-500 text-xs">${bytes}</td>
-                        <td class="px-4 py-3">${badge}</td>`;
+                        <td class="px-6 py-4 text-sm text-[#e5e7eb]">${badge}</td>`;
                     tbody.appendChild(tr);
                 }
 

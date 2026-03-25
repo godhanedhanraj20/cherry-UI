@@ -36,6 +36,10 @@
         .theme-card {
             background-color: {{ theme.colors.card }};
             color: {{ theme.colors.text }};
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.05);
+            backdrop-filter: blur(18px);
+            background-image: linear-gradient(to bottom right, rgba(255,255,255,0.08), transparent 45%, transparent);
         }
 
         .theme-primary {
@@ -53,81 +57,255 @@
         .theme-text-secondary {
             color: {{ theme.colors.text_secondary }};
         }
+
+        .skeleton {
+            background: linear-gradient(
+                90deg,
+                rgba(255,255,255,0.05) 25%,
+                rgba(255,255,255,0.1) 37%,
+                rgba(255,255,255,0.05) 63%
+            );
+            background-size: 400% 100%;
+            animation: skeleton-loading 1.4s ease infinite;
+            border-radius: 0.5rem;
+        }
+
+        @keyframes skeleton-loading {
+            0% { background-position: 100% 50%; }
+            100% { background-position: 0 50%; }
+        }
     </style>
 </head>
 
-<body class="min-h-screen flex flex-col">
-    <!-- Navigation -->
-    <nav class="theme-card shadow-lg border-b text-text">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center space-x-4">
-                    <h1 class="text-2xl font-bold text-primary">Telegram Stremio</h1>
-                    {% if current_user %}
-                    <div class="hidden md:flex space-x-4">
-                        <a href="/"
-                            class="text-text hover:text-primary px-3 py-2 rounded-md transition-colors">Dashboard</a>
-                        <a href="/media/manage"
-                            class="text-text hover:text-primary px-3 py-2 rounded-md transition-colors">Media</a>
-                        <a href="/admin/dashboard"
-                            class="text-text hover:text-primary px-3 py-2 rounded-md transition-colors">Admin</a>
-                        <a href="/admin/subscriptions"
-                            class="text-text hover:text-primary px-3 py-2 rounded-md transition-colors">Sub Manage</a>
-                        <a href="/admin/access"
-                            class="text-text hover:text-primary px-3 py-2 rounded-md transition-colors">Access</a>
-                    </div>
-                    {% endif %}
-                </div>
-
-                <div class="flex items-center space-x-4">
-                    <!-- Theme Selector -->
-                    <div class="relative">
-                        <form method="post" action="/set-theme" id="theme-form">
-                            <select name="theme" onchange="document.getElementById('theme-form').submit()"
-                                class="theme-card border border-gray-300 rounded-md px-3 py-2 text-sm">
-                                {% for theme_key, theme_data in themes.items() %}
-                                <option value="{{ theme_key }}" {% if current_theme==theme_key %}selected{% endif %}>
-                                    {{ theme_data.name }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </form>
-                    </div>
-
-                    {% if current_user %}
-                    <div class="flex items-center space-x-4">
-                        <span class="text-sm theme-text-secondary">{{ current_user }}</span>
-                        <a href="/logout"
-                            class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors">Logout</a>
-                    </div>
-                    {% else %}
-                    <a href="/login"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors">Login</a>
-                    {% endif %}
-                </div>
+<body class="min-h-screen bg-[#0b0f19] text-text">
+    <div id="toast-container" class="fixed top-5 right-5 z-[9999] space-y-3"></div>
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        {% if current_user %}
+        <aside class="hidden md:flex fixed left-0 top-0 h-screen w-[240px] flex-col bg-[rgba(15,15,30,0.9)] backdrop-blur-xl border-r border-white/5 shadow-[0_10px_40px_rgba(0,0,0,0.5)] z-40">
+            <div class="px-5 py-6 border-b border-white/5">
+                <h1 class="text-xl font-bold text-primary">Telegram Stremio</h1>
             </div>
-        </div>
-    </nav>
+            <nav class="flex-1 px-3 py-4 space-y-2">
+                <a href="/"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 hover:bg-white/5 {{ 'bg-[#8b5cf6]/20 text-white shadow-[0_0_20px_rgba(139,92,246,0.3)]' if request.url.path == '/' else 'text-text' }}">
+                    <i class="fas fa-chart-line w-4 text-center"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/media/manage"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 hover:bg-white/5 {{ 'bg-[#8b5cf6]/20 text-white shadow-[0_0_20px_rgba(139,92,246,0.3)]' if request.url.path.startswith('/media') else 'text-text' }}">
+                    <i class="fas fa-photo-video w-4 text-center"></i>
+                    <span>Media</span>
+                </a>
+                <a href="/admin/dashboard"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 hover:bg-white/5 {{ 'bg-[#8b5cf6]/20 text-white shadow-[0_0_20px_rgba(139,92,246,0.3)]' if request.url.path.startswith('/admin/dashboard') else 'text-text' }}">
+                    <i class="fas fa-shield-alt w-4 text-center"></i>
+                    <span>Admin</span>
+                </a>
+                <a href="/admin/subscriptions"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 hover:bg-white/5 {{ 'bg-[#8b5cf6]/20 text-white shadow-[0_0_20px_rgba(139,92,246,0.3)]' if request.url.path.startswith('/admin/subscriptions') else 'text-text' }}">
+                    <i class="fas fa-credit-card w-4 text-center"></i>
+                    <span>Sub Manage</span>
+                </a>
+                <a href="/admin/access"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 hover:bg-white/5 {{ 'bg-[#8b5cf6]/20 text-white shadow-[0_0_20px_rgba(139,92,246,0.3)]' if request.url.path.startswith('/admin/access') else 'text-text' }}">
+                    <i class="fas fa-key w-4 text-center"></i>
+                    <span>Access</span>
+                </a>
+            </nav>
+        </aside>
+        {% endif %}
 
-    <!-- Main Content -->
-    <main class="flex-1">
-        {% block content %}{% endblock %}
-    </main>
+        <!-- Main shell -->
+        <div class="flex-1 md:ml-[240px] min-w-0 flex flex-col">
+            <!-- Top bar -->
+            <header class="theme-card sticky top-0 z-30 border-b border-white/5 backdrop-blur-2xl bg-[rgba(10,10,20,0.6)] relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1px] after:bg-gradient-to-r after:from-transparent after:via-[#8b5cf6] after:to-transparent">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center h-14">
+                        <h1 class="text-lg font-semibold text-primary">Telegram Stremio</h1>
 
-    <!-- Footer -->
-    <footer class="theme-card border-t mt-auto text-text">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex justify-between items-center">
-                <p class="theme-text-secondary text-sm">© 2025 Telegram Stremio. All rights reserved.</p>
-                <div class="flex space-x-4">
-                    <a href="/status"
-                        class="theme-text-secondary hover:text-primary text-sm transition-colors">Status</a>
-                    <a href="/stremio" class="theme-text-secondary hover:text-primary text-sm transition-colors">Stremio
-                        Guide</a>
+                        <div class="flex items-center space-x-4">
+                            <div class="relative">
+                                <form method="post" action="/set-theme" id="theme-form">
+                                    <select name="theme" onchange="document.getElementById('theme-form').submit()"
+                                        class="theme-card border border-gray-300/30 rounded-md px-3 py-2 text-sm bg-[rgba(20,20,35,0.8)]">
+                                        {% for theme_key, theme_data in themes.items() %}
+                                        <option value="{{ theme_key }}" {% if current_theme==theme_key %}selected{% endif %}>
+                                            {{ theme_data.name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
+                            </div>
+
+                            {% if current_user %}
+                            <div class="flex items-center space-x-4">
+                                <span class="text-sm theme-text-secondary">{{ current_user }}</span>
+                                <a href="/logout"
+                                    class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 shadow-[0_0_25px_rgba(139,92,246,0.4)] hover:brightness-110 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 ease-out">Logout</a>
+                            </div>
+                            {% else %}
+                            <a href="/login"
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow-[0_0_25px_rgba(139,92,246,0.4)] hover:brightness-110 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 ease-out">Login</a>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="flex-1">
+                {% block content %}{% endblock %}
+            </main>
+
+            <!-- Footer -->
+            <footer class="theme-card border-t mt-auto text-text border-white/5">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                    <div class="flex justify-between items-center">
+                        <p class="theme-text-secondary text-sm">© 2025 Telegram Stremio. All rights reserved.</p>
+                        <div class="flex space-x-4">
+                            <a href="/status"
+                                class="theme-text-secondary hover:text-primary text-sm transition-colors">Status</a>
+                            <a href="/stremio" class="theme-text-secondary hover:text-primary text-sm transition-colors">Stremio
+                                Guide</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </div>
-    </footer>
+    </div>
+    <script>
+        
+        function setButtonLoading(btn, isLoading, text = null) {
+            if (!btn) return;
+
+            if (isLoading) {
+                btn.dataset.originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.classList.add('opacity-70', 'cursor-not-allowed');
+                btn.innerHTML = `
+                    <span class="flex items-center gap-2">
+                        <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" />
+                        </svg>
+                        ${text || "Processing..."}
+                    </span>
+                `;
+            } else {
+                btn.disabled = false;
+                btn.classList.remove('opacity-70', 'cursor-not-allowed');
+                btn.innerHTML = btn.dataset.originalText || btn.innerHTML;
+            }
+        }
+
+        let confirmCallback = null;
+
+        function openConfirmModal(message, onConfirm, title = "Confirm Action") {
+            const modal = document.getElementById('confirm-modal');
+            const titleEl = document.getElementById('confirm-title');
+            const msgEl = document.getElementById('confirm-message');
+            if (!modal || !msgEl || !titleEl) return;
+            titleEl.textContent = title;
+            msgEl.textContent = message;
+            modal.style.display = 'flex';
+            confirmCallback = onConfirm;
+        }
+
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirm-modal');
+            if (modal) modal.style.display = 'none';
+            confirmCallback = null;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const okBtn = document.getElementById('confirm-ok-btn');
+            if (okBtn) {
+                okBtn.onclick = () => {
+                    if (confirmCallback) confirmCallback();
+                    closeConfirmModal();
+                };
+            }
+
+            const inputOkBtn = document.getElementById('input-ok-btn');
+            if (inputOkBtn) {
+                inputOkBtn.onclick = () => {
+                    const value = document.getElementById('input-field').value;
+                    if (inputCallback) inputCallback(value);
+                    closeInputModal();
+                };
+            }
+        });
+
+        function renderSkeletonRows(count = 5, widths = ["w-16","w-32","w-24","w-20","w-24","w-28"], tdClass = "px-6 py-4") {
+            return Array.from({ length: count }).map(() => `
+                <tr>
+                    ${widths.map(w => `<td class="${tdClass}"><div class="skeleton h-4 ${w}"></div></td>`).join("")}
+                </tr>
+            `).join("");
+        }
+
+        function renderCardSkeleton() {
+            return `<div class="skeleton h-4 w-2/3 mb-2"></div><div class="skeleton h-4 w-full"></div>`;
+        }
+
+        let inputCallback = null;
+
+        function openInputModal(title, placeholder, onSubmit) {
+            document.getElementById('input-title').textContent = title;
+            const input = document.getElementById('input-field');
+            input.value = "";
+            input.placeholder = placeholder || "";
+            document.getElementById('input-modal').style.display = 'flex';
+            inputCallback = onSubmit;
+            input.focus();
+        }
+
+        function closeInputModal() {
+            document.getElementById('input-modal').style.display = 'none';
+            inputCallback = null;
+        }
+
+        function showToast(message, type = "info") {
+            const colors = {
+                success: "bg-green-500/20 text-green-300 border-green-400/30",
+                error: "bg-red-500/20 text-red-300 border-red-400/30",
+                info: "bg-blue-500/20 text-blue-300 border-blue-400/30"
+            };
+
+            const toast = document.createElement("div");
+            toast.className = `px-4 py-3 rounded-xl border backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] transition-all duration-300 ease-out ${colors[type] || colors.info}`;
+            toast.innerHTML = `<span class="text-sm font-medium">${message}</span>`;
+
+            const container = document.getElementById("toast-container");
+            if (!container) return;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add("opacity-0", "translate-x-10");
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+    <div id="confirm-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[999]">
+      <div class="bg-gray-900 text-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+        <h3 id="confirm-title" class="text-lg font-semibold mb-2">Confirm Action</h3>
+        <p id="confirm-message" class="text-sm text-gray-300 mb-6"></p>
+        <div class="flex justify-end gap-3">
+          <button onclick="closeConfirmModal()" class="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600">Cancel</button>
+          <button id="confirm-ok-btn" class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500">Confirm</button>
+        </div>
+      </div>
+    </div>
+    <div id="input-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[999]">
+      <div class="bg-gray-900 text-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+        <h3 id="input-title" class="text-lg font-semibold mb-2">Input Required</h3>
+        <input id="input-field" type="text" class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 mb-4">
+        <div class="flex justify-end gap-3">
+          <button onclick="closeInputModal()" class="px-4 py-2 rounded-lg bg-gray-700">Cancel</button>
+          <button id="input-ok-btn" class="px-4 py-2 rounded-lg bg-primary text-white">Submit</button>
+        </div>
+      </div>
+    </div>
 </body>
 
 </html>
