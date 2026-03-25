@@ -3,128 +3,114 @@
 {% block title %}Admin Dashboard - Telegram Stremio{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-text">
-    <div class="mb-8 flex justify-between items-center">
-        <div>
-            <h1 class="text-3xl font-bold text-text">Admin Dashboard</h1>
-            <p class="mt-2 text-sm theme-text-secondary">Monitor system health and manage flagged dead links.</p>
-        </div>
-    </div>
-
-    <!-- System Health Section -->
-    <div class="mb-10">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-text">System Health</h2>
-            <button onclick="clearCache()"
-                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors shadow-sm flex items-center justify-center">
-                <i class="fas fa-trash-alt mr-2"></i> Clear File Cache
-            </button>
+<div class="min-h-screen bg-[#0b0f19] text-[#e5e7eb] relative before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_top,rgba(139,92,246,0.15),transparent_60%)] before:pointer-events-none">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-semibold tracking-wide text-[#e5e7eb]">Admin Dashboard</h1>
+                <p class="mt-2 text-xs opacity-50 uppercase tracking-wide text-[#9ca3af]">Monitor system health and manage flagged dead links.</p>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="stats-container">
-            <!-- Cache Card -->
-            <div class="theme-card rounded-xl border p-6 shadow-sm">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0 bg-primary/10 p-3 rounded-lg">
-                        <i class="fas fa-memory text-xl text-primary"></i>
+        <div class="space-y-8">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold tracking-wide text-[#e5e7eb]">System Health</h2>
+                <button onclick="clearCache(this)"
+                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-[0_0_25px_rgba(139,92,246,0.4)] hover:brightness-110 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 ease-out flex items-center justify-center">
+                    <i class="fas fa-trash-alt mr-2"></i> Clear File Cache
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="stats-container">
+                <div class="theme-card rounded-2xl bg-[rgba(34,34,56,0.92)] bg-gradient-to-br from-white/5 to-transparent p-8 shadow-[0_8px_32px_rgba(0,0,0,0.4)] ring-1 ring-white/5 transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(139,92,246,0.25)]">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-[#8b5cf6]/25 p-3 rounded-xl shadow-[0_0_18px_rgba(139,92,246,0.35)]">
+                            <i class="fas fa-memory text-lg text-[#8b5cf6]"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xs opacity-50 uppercase tracking-wide text-[#9ca3af]">Cached File IDs</h3>
+                            <p class="text-3xl font-bold text-[#f3f4f6]" id="stat-cache-size">-</p>
+                        </div>
                     </div>
-                    <div class="ml-4">
-                        <h3 class="text-sm font-medium theme-text-secondary">Cached File IDs</h3>
-                        <p class="text-2xl font-bold text-text" id="stat-cache-size">-</p>
+                </div>
+
+                <div class="theme-card rounded-2xl bg-[rgba(34,34,56,0.92)] bg-gradient-to-br from-white/5 to-transparent p-8 shadow-[0_8px_32px_rgba(0,0,0,0.4)] ring-1 ring-white/5 transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(139,92,246,0.25)]">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-[#8b5cf6]/25 p-3 rounded-xl shadow-[0_0_18px_rgba(139,92,246,0.35)]">
+                            <i class="fas fa-robot text-lg text-[#8b5cf6]"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xs opacity-50 uppercase tracking-wide text-[#9ca3af]">Connected Bots</h3>
+                            <p class="text-3xl font-bold text-[#f3f4f6]" id="stat-bot-count">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="theme-card rounded-2xl bg-[rgba(34,34,56,0.92)] bg-gradient-to-br from-white/5 to-transparent p-8 shadow-[0_8px_32px_rgba(0,0,0,0.4)] ring-1 ring-white/5 transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(139,92,246,0.25)]">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-[#8b5cf6]/25 p-3 rounded-xl shadow-[0_0_18px_rgba(139,92,246,0.35)]">
+                            <i class="fas fa-signal text-lg text-[#8b5cf6]"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xs opacity-50 uppercase tracking-wide text-[#9ca3af]">Bot Load Entries</h3>
+                            <p class="text-3xl font-bold text-[#f3f4f6]" id="stat-workload-count">-</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Active Bots Card -->
-            <div class="theme-card rounded-xl border p-6 shadow-sm">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0 bg-primary/10 p-3 rounded-lg">
-                        <i class="fas fa-robot text-xl text-primary"></i>
+            <div class="theme-card rounded-2xl bg-[rgba(20,20,35,0.66)] bg-gradient-to-br from-white/5 to-transparent backdrop-blur-xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.4)] ring-1 ring-white/5">
+                <div class="flex items-center justify-between pb-4 border-b border-white/5">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-[#8b5cf6]/20 p-2 rounded-lg">
+                            <i class="fas fa-heartbeat text-[#8b5cf6]"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold tracking-wide text-[#e5e7eb]">Bot Health & Load</h3>
                     </div>
-                    <div class="ml-4">
-                        <h3 class="text-sm font-medium theme-text-secondary">Connected Bots</h3>
-                        <p class="text-2xl font-bold text-text" id="stat-bot-count">-</p>
+                </div>
+                <div id="stat-workloads" class="divide-y divide-white/5 mt-3">
+                    <div class="px-2 py-5 text-[#9ca3af] opacity-80">Loading bot health...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-8 border-t border-white/5 pt-10">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold tracking-wide text-[#e5e7eb]">Live Streams</h2>
+                <button onclick="clearAnalytics(this)"
+                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-[0_0_25px_rgba(139,92,246,0.4)] hover:brightness-110 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 ease-out flex items-center">
+                    <i class="fas fa-trash-alt mr-2"></i> Clear Analytics
+                </button>
+            </div>
+
+            <div class="theme-card rounded-2xl bg-[rgba(32,32,52,0.88)] bg-gradient-to-br from-white/8 via-transparent to-transparent backdrop-blur-xl p-8 shadow-[0_10px_40px_rgba(0,0,0,0.5)] ring-1 ring-white/5 relative before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_top,rgba(139,92,246,0.15),transparent_60%)] before:pointer-events-none">
+                <div id="analytics-tbody" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="md:col-span-2 px-6 py-12 text-center text-[#9ca3af] opacity-80">
+                        <i class="fas fa-spinner fa-spin text-[#8b5cf6] mr-2"></i> Loading analytics...
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Bot Health & Load -->
-        <div class="theme-card rounded-xl border shadow-sm mt-6">
-            <div class="flex items-center justify-between px-6 py-4 border-b">
-                <div class="flex items-center gap-3">
-                    <div class="bg-primary/10 p-2 rounded-lg">
-                        <i class="fas fa-heartbeat text-primary"></i>
-                    </div>
-                    <h3 class="text-base font-semibold text-text">Bot Health & Load</h3>
+        <div class="space-y-4 border-t border-white/5 pt-10">
+            <h2 class="text-xl font-semibold tracking-wide text-[#e5e7eb]">Flagged Dead Links</h2>
+            <div class="theme-card rounded-2xl overflow-hidden bg-[rgba(20,20,35,0.7)] backdrop-blur-xl border border-white/5 shadow-[0_10px_40px_rgba(0,0,0,0.4)]">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-[#e5e7eb]">
+                        <thead class="text-xs uppercase tracking-wide text-[#9ca3af] bg-white/5 border-b border-white/5">
+                            <tr>
+                                <th class="px-6 py-4 font-semibold">Title</th>
+                                <th class="px-6 py-4 font-semibold w-24">Type</th>
+                                <th class="px-6 py-4 font-semibold">Quality Details</th>
+                                <th class="px-6 py-4 font-semibold w-32 text-center">Date Added</th>
+                                <th class="px-6 py-4 font-semibold w-24 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dead-links-tbody" class="divide-y divide-white/5">
+                            <tr><td colspan="5" class="px-6 py-4 text-center text-[#9ca3af] opacity-70"><i class="fas fa-spinner fa-spin mr-2"></i>Loading dead links...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-            <div id="stat-workloads" class="divide-y divide-white/10">
-                <div class="px-6 py-4 text-sm theme-text-secondary">Loading...</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Stream Analytics -->
-    <div class="mb-10">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-text">Recent Stream Analytics</h2>
-            <button onclick="clearAnalytics()"
-                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors shadow-sm flex items-center">
-                <i class="fas fa-trash-alt mr-2"></i> Clear Analytics
-            </button>
-        </div>
-
-        <div class="theme-card border rounded-xl overflow-hidden shadow-sm">
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left text-text">
-                    <thead class="text-xs uppercase theme-card border-b text-text">
-                        <tr>
-                            <th class="px-6 py-4 font-semibold">Stream ID</th>
-                            <th class="px-6 py-4 font-semibold">Title</th>
-                            <th class="px-6 py-4 font-semibold text-center">Bot (DC)</th>
-                            <th class="px-6 py-4 font-semibold text-right">Data Transferred</th>
-                            <th class="px-6 py-4 font-semibold text-right">Avg / Peak Speed</th>
-                            <th class="px-6 py-4 font-semibold text-center">Duration</th>
-                            <th class="px-6 py-4 font-semibold text-center">Status</th>
-                            <th class="px-6 py-4 font-semibold text-right">Time</th>
-                        </tr>
-                    </thead>
-                    <tbody id="analytics-tbody" class="divide-y divide-white/10">
-                        <tr>
-                            <td colspan="8" class="px-6 py-8 text-center theme-text-secondary">
-                                <i class="fas fa-spinner fa-spin text-primary mr-2"></i> Loading analytics...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Dead Links -->
-    <div>
-        <h2 class="text-xl font-semibold text-text mb-4">Flagged Dead Links</h2>
-        <div class="theme-card border rounded-xl overflow-hidden shadow-sm">
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left text-text">
-                    <thead class="text-xs uppercase theme-card border-b text-text">
-                        <tr>
-                            <th class="px-6 py-4 font-semibold">Title</th>
-                            <th class="px-6 py-4 font-semibold w-24">Type</th>
-                            <th class="px-6 py-4 font-semibold">Quality Details</th>
-                            <th class="px-6 py-4 font-semibold w-32 text-center">Date Added</th>
-                            <th class="px-6 py-4 font-semibold w-24 text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dead-links-tbody" class="divide-y divide-white/10">
-                        <tr>
-                            <td colspan="5" class="px-6 py-8 text-center theme-text-secondary">
-                                <i class="fas fa-spinner fa-spin text-primary mr-2"></i> Loading dead links...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
@@ -138,39 +124,40 @@
                 const data = await res.json();
                 document.getElementById('stat-cache-size').textContent = data.cache_size;
                 document.getElementById('stat-bot-count').textContent = data.total_bots;
+                document.getElementById('stat-workload-count').textContent = (data.bot_workloads || []).length;
 
                 let wlHtml = '';
                 if (data.bot_workloads && data.bot_workloads.length > 0) {
                     data.bot_workloads.forEach(b => {
-                        let statusColor = 'bg-green-500/10 text-green-500';
-                        if (b.status === 'degraded') statusColor = 'bg-yellow-500/10 text-yellow-500';
-                        if (b.status === 'failing') statusColor = 'bg-red-500/10 text-red-500';
+                        let statusColor = 'bg-green-500/20 text-green-300';
+                        if (b.status === 'degraded') statusColor = 'bg-yellow-500/20 text-yellow-300';
+                        if (b.status === 'failing') statusColor = 'bg-red-500/20 text-red-300';
 
                         wlHtml += `
-                            <div class="flex items-center justify-between px-6 py-4 hover:bg-white/5 transition-colors">
+                            <div class="flex items-center justify-between px-2 py-4 hover:bg-white/5 rounded-xl transition-all duration-300 ease-out">
                                 <div class="flex items-center gap-3">
-                                    <span class="font-semibold text-text">${b.display_name}</span>
+                                    <span class="font-semibold text-[#e5e7eb]">${b.display_name}</span>
                                     <span class="text-[10px] px-2 py-0.5 rounded-full uppercase font-bold tracking-wider ${statusColor}">${b.status}</span>
                                 </div>
-                                <div class="flex items-center gap-6 text-sm">
+                                <div class="flex items-center gap-8 text-sm">
                                     <div class="text-center">
-                                        <div class="text-xs theme-text-secondary mb-0.5">Active Streams</div>
-                                        <div class="font-bold text-text">${b.current_load}</div>
+                                        <div class="text-xs opacity-50 uppercase tracking-wide text-[#9ca3af] mb-0.5">Active Streams</div>
+                                        <div class="text-lg font-bold text-[#e5e7eb]">${b.current_load}</div>
                                     </div>
                                     <div class="text-center">
-                                        <div class="text-xs theme-text-secondary mb-0.5">Avg Speed</div>
-                                        <div class="font-bold text-text">${b.avg_mbps} <span class="font-normal text-xs theme-text-secondary">MB/s</span></div>
+                                        <div class="text-xs opacity-50 uppercase tracking-wide text-[#9ca3af] mb-0.5">Avg Speed</div>
+                                        <div class="text-lg font-bold text-[#e5e7eb]">${b.avg_mbps} <span class="font-normal text-xs text-[#9ca3af]">MB/s</span></div>
                                     </div>
                                     <div class="text-center">
-                                        <div class="text-xs theme-text-secondary mb-0.5">Recent Failures</div>
-                                        <div class="font-bold ${b.failures > 0 ? 'text-red-500' : 'theme-text-secondary'}">${b.failures}</div>
+                                        <div class="text-xs opacity-50 uppercase tracking-wide text-[#9ca3af] mb-0.5">Recent Failures</div>
+                                        <div class="text-lg font-bold ${b.failures > 0 ? 'text-red-300' : 'text-[#9ca3af]'}">${b.failures}</div>
                                     </div>
                                 </div>
                             </div>
                         `;
                     });
                 } else {
-                    wlHtml = '<div class="px-6 py-8 text-center theme-text-secondary">No bot data available</div>';
+                    wlHtml = '<div class="px-2 py-10 text-center text-[#9ca3af] opacity-80"><i class="fas fa-satellite-dish mr-2"></i>No bot data available</div>';
                 }
                 document.getElementById('stat-workloads').innerHTML = wlHtml;
             }
@@ -183,38 +170,61 @@
         try {
             const res = await fetch('/api/admin/stream-analytics');
             const tbody = document.getElementById('analytics-tbody');
+            tbody.innerHTML = `<div class="rounded-2xl p-7">${renderCardSkeleton()}</div><div class="rounded-2xl p-7">${renderCardSkeleton()}</div>`;
             if (res.ok) {
                 const data = await res.json();
                 const streams = data.data.recent;
 
                 if (!streams || streams.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="8" class="px-6 py-8 text-center theme-text-secondary">No recent streams recorded.</td></tr>';
+                    tbody.innerHTML = '<div class="md:col-span-2 px-6 py-12 text-center text-[#9ca3af] opacity-80"><i class="fas fa-film mr-2"></i>No recent streams recorded.</div>';
                     return;
                 }
 
                 let html = '';
                 streams.forEach(s => {
-                    const mbpsStr = `${s.avg_mbps.toFixed(1)} / <span class="theme-text-secondary">${s.peak_mbps.toFixed(1)}</span>`;
-                    const bytesStr = (s.total_bytes / (1024 * 1024)).toFixed(1) + ' MB';
-                    const timeStr = new Date(s.logged_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const titleStr = s.title || s.meta?.title || 'Unknown Stream';
                     const durationStr = s.duration_sec ? `${s.duration_sec.toFixed(1)}s` : '—';
-                    const titleStr = s.title || s.meta?.title || '—';
+                    const speedStr = `${s.avg_mbps.toFixed(1)} MB/s`;
+                    const userStr = s.meta?.user_name || 'Unknown User';
 
-                    let statusColor = 'text-green-500';
-                    if (s.status === 'error') statusColor = 'text-red-500';
-                    if (s.status === 'cancelled') statusColor = 'text-yellow-500';
+                    let statusClass = 'bg-green-500/20 text-green-300';
+                    let accentBorder = 'border-green-400';
+                    let accentGlow = 'shadow-green-500/20';
+                    let statusText = 'ACTIVE';
+                    if (s.status === 'error') {
+                        statusClass = 'bg-red-500/20 text-red-300';
+                        accentBorder = 'border-red-400';
+                        accentGlow = 'shadow-red-500/20';
+                        statusText = 'FAILED';
+                    }
+                    if (s.status === 'cancelled') {
+                        statusClass = 'bg-yellow-500/20 text-yellow-300';
+                        accentBorder = 'border-yellow-400';
+                        accentGlow = 'shadow-yellow-500/20';
+                        statusText = 'WARNING';
+                    }
 
                     html += `
-                        <tr class="hover:bg-white/5 transition-colors">
-                            <td class="px-6 py-3 font-mono text-xs theme-text-secondary truncate max-w-[120px]" title="${s.stream_id}">${s.stream_id}</td>
-                            <td class="px-6 py-3 text-sm font-medium text-text max-w-[160px] truncate" title="${titleStr}">${titleStr}</td>
-                            <td class="px-6 py-3 text-center">Bot ${s.client_index + 1} <span class="text-xs theme-text-secondary ml-1">(DC${s.dc_id})</span></td>
-                            <td class="px-6 py-3 text-right font-medium text-text">${bytesStr}</td>
-                            <td class="px-6 py-3 text-right font-medium text-text">${mbpsStr} <span class="text-xs theme-text-secondary">MB/s</span></td>
-                            <td class="px-6 py-3 text-center theme-text-secondary">${durationStr}</td>
-                            <td class="px-6 py-3 text-center capitalize text-xs font-bold ${statusColor}">${s.status}</td>
-                            <td class="px-6 py-3 text-right theme-text-secondary text-xs">${timeStr}</td>
-                        </tr>
+                        <div class="rounded-2xl border-l-4 ${accentBorder} ${accentGlow} bg-[rgba(16,18,30,0.92)] bg-gradient-to-r from-white/5 to-transparent p-7 shadow-[0_10px_40px_rgba(0,0,0,0.5)] ring-1 ring-white/5 transition-all duration-300 ease-out hover:scale-[1.04] hover:shadow-[0_25px_80px_rgba(139,92,246,0.25)]">
+                            <div class="flex items-start justify-between gap-3 mb-6">
+                                <h3 class="text-lg font-bold tracking-wide text-[#e5e7eb] truncate" title="${titleStr}">${titleStr}</h3>
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold uppercase ${statusClass}">${statusText}</span>
+                            </div>
+                            <div class="space-y-3 text-sm">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs opacity-50 uppercase tracking-wide text-[#9ca3af]">Duration</span>
+                                    <span class="text-lg font-bold text-[#e5e7eb]">${durationStr}</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs opacity-50 uppercase tracking-wide text-[#9ca3af]">Speed</span>
+                                    <span class="text-lg font-bold text-[#e5e7eb]">${speedStr}</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs opacity-50 uppercase tracking-wide text-[#9ca3af]">User</span>
+                                    <span class="text-lg font-bold text-[#e5e7eb] truncate ml-4">${userStr}</span>
+                                </div>
+                            </div>
+                        </div>
                     `;
                 });
                 tbody.innerHTML = html;
@@ -228,36 +238,37 @@
         try {
             const res = await fetch('/api/admin/dead-links');
             const tbody = document.getElementById('dead-links-tbody');
+            tbody.innerHTML = renderSkeletonRows(5, ['w-48','w-20','w-36','w-24','w-16']);
             if (res.ok) {
                 const data = await res.json();
                 const links = data.data;
 
                 if (links.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center theme-text-secondary">No dead links found. All files are healthy!</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-10 text-center text-[#9ca3af] opacity-80"><i class="fas fa-check-circle mr-2"></i>No dead links found. All files are healthy!</td></tr>';
                     return;
                 }
 
                 let html = '';
                 links.forEach(l => {
                     const typeBadge = l.type === 'movie'
-                        ? '<span class="px-2 py-1 rounded bg-primary/10 text-primary text-xs font-medium">Movie</span>'
-                        : '<span class="px-2 py-1 rounded bg-accent/10 text-accent text-xs font-medium">TV Series</span>';
+                        ? '<span class="px-2 py-1 rounded-full bg-[#8b5cf6]/20 text-[#c4b5fd] text-xs font-medium">Movie</span>'
+                        : '<span class="px-2 py-1 rounded-full bg-white/10 text-[#e5e7eb] text-xs font-medium">TV Series</span>';
 
                     html += `
-                        <tr class="hover:bg-white/5 transition-colors">
+                        <tr class="border-b border-white/5 hover:bg-white/5 hover:scale-[1.01] transition-all duration-200">
                             <td class="px-6 py-4">
-                                <div class="font-medium text-text">${l.title}</div>
-                                <div class="text-xs theme-text-secondary">${l.year || ''}</div>
+                                <div class="font-medium text-[#e5e7eb]">${l.title}</div>
+                                <div class="text-xs text-[#9ca3af]">${l.year || ''}</div>
                             </td>
                             <td class="px-6 py-4">${typeBadge}</td>
                             <td class="px-6 py-4">
-                                <div class="text-sm font-medium text-red-500">${l.quality}</div>
-                                <div class="text-xs theme-text-secondary">${l.size || 'Unknown size'}</div>
+                                <div class="text-sm font-medium text-red-300">${l.quality}</div>
+                                <div class="text-xs text-[#9ca3af]">${l.size || 'Unknown size'}</div>
                             </td>
-                            <td class="px-6 py-4 text-center theme-text-secondary text-xs">${l.date_added ? new Date(l.date_added).toLocaleDateString() : '—'}</td>
+                            <td class="px-6 py-4 text-center text-[#9ca3af] text-xs">${l.date_added ? new Date(l.date_added).toLocaleDateString() : '—'}</td>
                             <td class="px-6 py-4 text-center">
-                                <button onclick="deleteDeadLink(${l.tmdb_id}, ${l.db_index}, '${l.type}', '${l.quality_id}', ${l.season || -1}, ${l.episode || -1})"
-                                        class="text-red-500 hover:text-red-600 bg-red-500/10 hover:bg-red-500/20 rounded p-2 transition-colors"
+                                <button onclick="deleteDeadLink(this, ${l.tmdb_id}, ${l.db_index}, '${l.type}', '${l.quality_id}', ${l.season || -1}, ${l.episode || -1})"
+                                        class="text-red-300 hover:text-red-200 bg-white/5 hover:bg-white/10 rounded-lg p-2 hover:scale-[1.05] hover:shadow-[0_0_14px_rgba(139,92,246,0.25)] transition-all duration-200"
                                         title="Delete from Database">
                                     <i class="fas fa-trash"></i>
                                 </button>
@@ -272,43 +283,62 @@
         }
     }
 
-    async function clearCache() {
-        if (!confirm("Are you sure you want to clear the Telegram FileId cache? This will force bots to re-fetch metadata on the next stream.")) return;
+    async function clearCache(btn, confirmed = false) {
+        setButtonLoading(btn, true, "Clearing...");
+        if (!confirmed) {
+            setButtonLoading(btn, false);
+            openConfirmModal("Are you sure you want to clear the Telegram FileId cache? This will force bots to re-fetch metadata on the next stream.", () => clearCache(btn, true));
+            return;
+        }
 
         try {
             const res = await fetch('/api/admin/clear-cache', { method: 'POST' });
             if (res.ok) {
                 const data = await res.json();
-                alert(data.message);
+                showToast(data.message || "Cache cleared successfully.", "success");
                 fetchStats();
             } else {
-                alert("Failed to clear cache.");
+                showToast("Failed to clear cache.", "error");
             }
         } catch (err) {
-            alert("Error clearing cache.");
+            showToast("Error clearing cache.", "error");
+        } finally {
+            setButtonLoading(btn, false);
         }
     }
 
-    async function clearAnalytics() {
-        if (!confirm("Are you sure you want to clear all stream analytics history? This cannot be undone.")) return;
+    async function clearAnalytics(btn, confirmed = false) {
+        setButtonLoading(btn, true, "Clearing...");
+        if (!confirmed) {
+            setButtonLoading(btn, false);
+            openConfirmModal("Are you sure you want to clear all stream analytics history? This cannot be undone.", () => clearAnalytics(btn, true));
+            return;
+        }
 
         try {
             const res = await fetch('/api/admin/clear-analytics', { method: 'POST' });
             if (res.ok) {
                 const data = await res.json();
-                alert(data.message || 'Analytics cleared successfully.');
+                showToast(data.message || 'Analytics cleared successfully.', 'success');
                 fetchAnalytics();
             } else {
                 const err = await res.json().catch(() => ({}));
-                alert(err.detail || 'Failed to clear analytics.');
+                showToast(err.detail || 'Failed to clear analytics.', 'error');
             }
         } catch (err) {
-            alert('Error clearing analytics.');
+            showToast('Error clearing analytics.', 'error');
+        } finally {
+            setButtonLoading(btn, false);
         }
     }
 
-    async function deleteDeadLink(tmdb_id, db_index, type, quality_id, season, episode) {
-        if (!confirm("Are you sure you want to purge this dead link from the database? Users will no longer see this quality in Stremio.")) return;
+    async function deleteDeadLink(btn, tmdb_id, db_index, type, quality_id, season, episode, confirmed = false) {
+        setButtonLoading(btn, true, "Deleting...");
+        if (!confirmed) {
+            setButtonLoading(btn, false);
+            openConfirmModal("Are you sure you want to purge this dead link from the database? Users will no longer see this quality in Stremio.", () => deleteDeadLink(btn, tmdb_id, db_index, type, quality_id, season, episode, true));
+            return;
+        }
 
         try {
             let endpoint = '';
@@ -320,21 +350,22 @@
 
             const res = await fetch(endpoint, { method: 'DELETE' });
             if (res.ok) {
-                fetchDeadLinks(); // Refresh table
+                fetchDeadLinks();
+                showToast("Dead link removed successfully.", "success");
             } else {
-                alert("Failed to delete the dead link.");
+                showToast("Failed to delete the dead link.", "error");
             }
         } catch (err) {
-            alert("Error communicating with server.");
+            showToast("Error communicating with server.", "error");
+        } finally {
+            setButtonLoading(btn, false);
         }
     }
 
-    // Initial fetch on load
     document.addEventListener('DOMContentLoaded', () => {
         fetchStats();
         fetchAnalytics();
         fetchDeadLinks();
-        // Refresh dynamic stats
         setInterval(fetchStats, 10000);
         setInterval(fetchAnalytics, 15000);
     });

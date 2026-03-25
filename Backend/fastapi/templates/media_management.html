@@ -365,8 +365,9 @@
     }
 
     // Delete media with confirmation
-    async function deleteMedia(tmdbId, dbIndex, title) {
-        if (!confirm(`Are you sure you want to delete "${title}"?\n\nThis action cannot be undone.`)) return;
+    async function deleteMedia(btn, tmdbId, dbIndex, title, confirmed = false) {
+        setButtonLoading(btn, true, "Deleting...");
+        if (!confirmed) { setButtonLoading(btn, false); openConfirmModal(`Are you sure you want to delete "${title}"?`, () => deleteMedia(btn, tmdbId, dbIndex, title, true)); return; }
 
         try {
             const response = await fetch(`/api/media/delete?tmdb_id=${tmdbId}&db_index=${dbIndex}&media_type=${mediaType}`, {
@@ -379,25 +380,17 @@
             });
 
             if (response.ok) {
-                // Show success message briefly
-                const successMsg = document.createElement('div');
-                successMsg.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg z-50';
-                successMsg.textContent = `"${title}" deleted successfully`;
-                document.body.appendChild(successMsg);
-
-                setTimeout(() => {
-                    document.body.removeChild(successMsg);
-                }, 3000);
-
-                // Reload current page
+                showToast(`"${title}" deleted successfully`, 'success');
                 loadMedia(currentPage, currentSearch);
             } else {
                 const error = await response.json();
-                alert(`Error deleting "${title}": ${error.detail || 'Unknown error'}`);
+                showToast(`Error deleting "${title}": ${error.detail || 'Unknown error'}`, 'error');
             }
         } catch (error) {
             console.error('Error deleting media:', error);
-            alert(`Error deleting "${title}": ${error.message}`);
+            showToast(`Error deleting "${title}": ${error.message}`, 'error');
+        } finally {
+            setButtonLoading(btn, false);
         }
     }
 

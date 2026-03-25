@@ -6,34 +6,31 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="mb-8 flex justify-between items-center">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Subscription Management</h1>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Manage subscription plans and view or edit active
-                users.</p>
+            <h1 class="text-xl font-semibold text-[#e5e7eb]">Subscription Management</h1>
+            <p class="mt-2 text-xs uppercase tracking-wide text-[#9ca3af]">Manage subscription plans and view or edit active users.</p>
         </div>
     </div>
 
     <!-- Subscription Plans Section -->
     <div class="mb-10">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Subscription Plans</h2>
+            <h2 class="text-xl font-semibold text-[#e5e7eb]">Subscription Plans</h2>
             <button onclick="openPlanModal()"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors shadow-sm flex items-center">
+                class="bg-[#8b5cf6] hover:bg-[#7c4cf4] text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:scale-[1.05] flex items-center">
                 <i class="fas fa-plus mr-2"></i> Add Plan
             </button>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="plans-container">
-            <div class="col-span-3 text-center text-gray-500 py-8">
-                <i class="fas fa-spinner fa-spin mr-2"></i> Loading plans...
-            </div>
+            <div class="col-span-3 text-center py-8 text-[#9ca3af] opacity-80">Loading plans...</div>
         </div>
     </div>
 
     <!-- User Subscriptions Section -->
     <div class="mb-10">
         <div class="flex items-center justify-between mb-3">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">User Subscriptions</h2>
+            <h2 class="text-xl font-semibold text-[#e5e7eb]">User Subscriptions</h2>
             <button onclick="fetchSubscribers()"
-                class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-md text-sm font-medium transition-colors shadow-sm flex items-center">
+                class="bg-white/5 hover:bg-white/10 text-[#e5e7eb] px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 hover:scale-[1.05] shadow-sm flex items-center">
                 <i class="fas fa-sync-alt mr-2"></i> Refresh
             </button>
         </div>
@@ -59,10 +56,10 @@
             </select>
         </div>
 
-        <div class="theme-card border rounded-xl overflow-hidden shadow-sm">
+        <div class="theme-card rounded-2xl bg-[rgba(20,20,35,0.7)] backdrop-blur-xl border border-white/5 shadow-[0_10px_40px_rgba(0,0,0,0.4)] overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left">
-                    <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-800 dark:text-gray-300 border-b">
+                <table class="w-full text-sm text-left text-[#e5e7eb]">
+                    <thead class="text-xs uppercase tracking-wide text-[#9ca3af] bg-white/5 border-b border-white/5">
                         <tr>
                             <th class="px-6 py-4 font-semibold">User Details</th>
                             <th class="px-6 py-4 font-semibold text-center">Status</th>
@@ -70,11 +67,8 @@
                             <th class="px-6 py-4 font-semibold text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="subscribers-tbody" class="divide-y divide-gray-100 dark:divide-gray-800">
-                        <tr>
-                            <td colspan="4" class="px-6 py-8 text-center text-gray-500"><i
-                                    class="fas fa-spinner fa-spin mr-2"></i> Loading...</td>
-                        </tr>
+                    <tbody id="subscribers-tbody" class="divide-y divide-white/5">
+                        <tr><td colspan="4" class="px-6 py-4 text-center text-[#9ca3af] opacity-80">Loading subscribers...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -95,49 +89,49 @@
 </div>
 
 <!-- Plan Modal -->
-<div id="plan-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-    <div class="relative top-20 mx-auto p-5 border shadow-lg rounded-md theme-card sm:w-11/12 md:max-w-md">
+<div id="plan-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-6 border border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.45)] rounded-2xl theme-card sm:w-11/12 md:max-w-md">
         <div class="mt-3 text-center">
-            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-2" id="plan-modal-title">Add New
+            <h3 class="text-lg leading-6 font-medium text-[#e5e7eb] mb-2" id="plan-modal-title">Add New
                 Plan</h3>
             <div class="mt-2 text-left">
                 <form id="plan-form" onsubmit="submitPlanForm(event)">
                     <input type="hidden" id="plan-id">
                     <div class="mb-4">
-                        <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Plan Name</label>
+                        <label class="block text-xs uppercase tracking-wide text-[#9ca3af] mb-2">Plan Name</label>
                         <input type="text" id="plan-name"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                            class="w-full bg-[#0f1422] border border-white/10 rounded-xl py-2 px-3 text-[#e5e7eb] focus:outline-none focus:border-[#8b5cf6]"
                             required>
                     </div>
                     <div class="mb-4">
-                        <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Validity Days</label>
+                        <label class="block text-xs uppercase tracking-wide text-[#9ca3af] mb-2">Validity Days</label>
                         <input type="number" id="plan-validity-days"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                            class="w-full bg-[#0f1422] border border-white/10 rounded-xl py-2 px-3 text-[#e5e7eb] focus:outline-none focus:border-[#8b5cf6]"
                             required min="1">
                     </div>
                     <div class="mb-4">
-                        <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Price (₹)</label>
+                        <label class="block text-xs uppercase tracking-wide text-[#9ca3af] mb-2">Price (₹)</label>
                         <input type="number" id="plan-price"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                            class="w-full bg-[#0f1422] border border-white/10 rounded-xl py-2 px-3 text-[#e5e7eb] focus:outline-none focus:border-[#8b5cf6]"
                             required min="0" step="0.01">
                     </div>
                     <div class="mb-4">
-                        <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Daily Limit (GB)</label>
+                        <label class="block text-xs uppercase tracking-wide text-[#9ca3af] mb-2">Daily Limit (GB)</label>
                         <input type="number" id="plan-daily-limit"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                            class="w-full bg-[#0f1422] border border-white/10 rounded-xl py-2 px-3 text-[#e5e7eb] focus:outline-none focus:border-[#8b5cf6]"
                             required min="0" step="0.01" value="0">
                     </div>
                     <div class="mb-4">
-                        <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Monthly Limit (GB)</label>
+                        <label class="block text-xs uppercase tracking-wide text-[#9ca3af] mb-2">Monthly Limit (GB)</label>
                         <input type="number" id="plan-monthly-limit"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                            class="w-full bg-[#0f1422] border border-white/10 rounded-xl py-2 px-3 text-[#e5e7eb] focus:outline-none focus:border-[#8b5cf6]"
                             required min="0" step="0.01" value="0">
                     </div>
                     <div class="flex justify-end gap-2 mt-6">
                         <button type="button" onclick="closePlanModal()"
-                            class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded shadow">Cancel</button>
+                            class="bg-white/5 hover:bg-white/10 text-[#e5e7eb] px-4 py-2 rounded-xl transition-all duration-300 hover:scale-[1.05]">Cancel</button>
                         <button type="submit"
-                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow">Save Plan</button>
+                            class="bg-[#8b5cf6] hover:bg-[#7c4cf4] text-white px-4 py-2 rounded-xl shadow-[0_0_20px_rgba(139,92,246,0.3)] transition-all duration-300 hover:scale-[1.05]">Save Plan</button>
                     </div>
                 </form>
             </div>
@@ -146,27 +140,27 @@
 </div>
 
 <!-- User Action Modal -->
-<div id="user-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-    <div class="relative top-20 mx-auto p-5 border shadow-lg rounded-md theme-card sm:w-11/12 md:max-w-md">
+<div id="user-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-6 border border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.45)] rounded-2xl theme-card sm:w-11/12 md:max-w-md">
         <div class="mt-3 text-center">
-            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-2" id="user-modal-title">Manage
+            <h3 class="text-lg leading-6 font-medium text-[#e5e7eb] mb-2" id="user-modal-title">Manage
                 User</h3>
-            <div class="text-sm text-gray-500 dark:text-gray-400 mb-4" id="user-modal-desc"></div>
+            <div class="text-sm text-[#9ca3af] mb-4" id="user-modal-desc"></div>
             <div class="mt-2 text-left">
                 <form id="user-form" onsubmit="submitUserForm(event)">
                     <input type="hidden" id="manage-user-id">
                     <input type="hidden" id="manage-action">
                     <div class="mb-4" id="days-input-group">
-                        <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Days to <span
+                        <label class="block text-xs uppercase tracking-wide text-[#9ca3af] mb-2">Days to <span
                                 id="days-action-label"></span></label>
                         <input type="number" id="manage-days"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                            class="w-full bg-[#0f1422] border border-white/10 rounded-xl py-2 px-3 text-[#e5e7eb] focus:outline-none focus:border-[#8b5cf6]"
                             min="1" value="30">
                     </div>
                     <div class="flex justify-end gap-2 mt-6">
                         <button type="button" onclick="closeUserModal()"
-                            class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded shadow">Cancel</button>
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
+                            class="bg-white/5 hover:bg-white/10 text-[#e5e7eb] px-4 py-2 rounded-xl transition-all duration-300 hover:scale-[1.05]">Cancel</button>
+                        <button type="submit" class="bg-[#8b5cf6] hover:bg-[#7c4cf4] text-white px-4 py-2 rounded-xl shadow-[0_0_20px_rgba(139,92,246,0.3)] transition-all duration-300 hover:scale-[1.05]"
                             id="btn-user-save">Confirm</button>
                     </div>
                 </form>
@@ -177,19 +171,26 @@
 
 <script>
     // ---- Plans ----
+    function renderPlanSkeletonCards(count = 3) {
+        return `<div class="col-span-3 grid md:grid-cols-3 gap-6">
+            ${Array.from({ length: count }).map(() => `<div class="theme-card rounded-2xl p-6">${renderCardSkeleton()}</div>`).join('')}
+        </div>`;
+    }
+
     async function fetchPlans() {
+        const container = document.getElementById('plans-container');
+        container.innerHTML = renderPlanSkeletonCards(3);
         try {
             const res = await fetch('/api/admin/subscriptions/plans');
-            const container = document.getElementById('plans-container');
             if (res.ok) {
                 const data = await res.json();
                 const plans = data.data || data.plans || [];
                 if (!plans.length) {
-                    container.innerHTML = '<div class="col-span-3 text-center text-gray-500 py-8">No plans found. Create one.</div>';
+                    container.innerHTML = '<div class="col-span-3 text-center text-[#9ca3af] opacity-70 py-12"><i class=\"fas fa-box-open mr-2\"></i>No plans found. Create one.</div>';
                     return;
                 }
                 container.innerHTML = plans.map(p => `
-          <div class="theme-card rounded-xl border p-6 shadow-sm relative group">
+          <div class="theme-card rounded-2xl bg-[rgba(20,20,35,0.7)] backdrop-blur-xl border border-white/5 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.4)] relative group transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_20px_60px_rgba(139,92,246,0.25)]">
             <div class="absolute right-4 top-4 hidden group-hover:flex gap-2">
               <button onclick="openPlanModal(
                 '${p._id}',
@@ -198,18 +199,19 @@
                 ${parseFloat(p.price ?? 0) || 0},
                 ${parseFloat(p.daily_limit_gb ?? 0) || 0},
                 ${parseFloat(p.monthly_limit_gb ?? 0) || 0}
-              )" class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button>
-              <button onclick="deletePlan('${p._id}')" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+              )" class="text-blue-300 hover:text-blue-200 rounded-xl bg-white/5 hover:bg-white/10 px-2 py-1 transition-all duration-300 hover:scale-[1.05]"><i class="fas fa-edit"></i></button>
+              <button onclick="deletePlan(this, '${p._id}')" class="text-red-300 hover:text-red-200 rounded-xl bg-white/5 hover:bg-white/10 px-2 py-1 transition-all duration-300 hover:scale-[1.05]"><i class="fas fa-trash"></i></button>
             </div>
             <div class="flex items-center">
-              <div class="flex-shrink-0 bg-yellow-100 dark:bg-yellow-900/30 p-3 rounded-lg">
-                <i class="fas fa-calendar-alt text-xl text-yellow-600 dark:text-yellow-400"></i>
+              <div class="flex-shrink-0 bg-white/5 p-3 rounded-lg">
+                <i class="fas fa-calendar-alt text-xl text-[#8b5cf6]"></i>
               </div>
               <div class="ml-4">
-                <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">${p.name || `${(p.validity_days ?? p.days ?? 0)} Days Plan`}</h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400">${parseInt(p.validity_days ?? p.days ?? 0) || 0} days validity</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Daily: ${parseFloat(p.daily_limit_gb ?? 0) || 0} GB • Monthly: ${parseFloat(p.monthly_limit_gb ?? 0) || 0} GB</p>
-                <p class="text-2xl font-bold text-gray-900 dark:text-white">₹${p.price}</p>
+                <h3 class="text-sm font-medium text-[#9ca3af]">${p.name || `${(p.validity_days ?? p.days ?? 0)} Days Plan`}</h3>
+                <p class="text-xs text-[#9ca3af]">${parseInt(p.validity_days ?? p.days ?? 0) || 0} days validity</p>
+                <p class="text-xs text-[#9ca3af]">Daily: ${parseFloat(p.daily_limit_gb ?? 0) || 0} GB • Monthly: ${parseFloat(p.monthly_limit_gb ?? 0) || 0} GB</p>
+                <p class="text-2xl font-bold text-[#e5e7eb]">₹${p.price}</p>
+                <span class="mt-2 inline-flex px-3 py-1 rounded-full text-xs font-semibold ${((p.status || "active").toLowerCase() === "active") ? "bg-green-500/20 text-green-300" : (((p.status || "").toLowerCase() === "trial") ? "bg-yellow-500/20 text-yellow-300" : "bg-red-500/20 text-red-300")}">${((p.status || "active").toLowerCase() === "active") ? "Active" : (((p.status || "").toLowerCase() === "trial") ? "Trial" : "Expired")}</span>
               </div>
             </div>
           </div>`).join('');
@@ -231,6 +233,8 @@
 
     async function submitPlanForm(e) {
         e.preventDefault();
+        const submitBtn = e.submitter;
+        setButtonLoading(submitBtn, true, "Saving...");
         const id = document.getElementById('plan-id').value;
         const validityDays = parseInt(document.getElementById('plan-validity-days').value);
         const payload = {
@@ -240,16 +244,31 @@
             daily_limit_gb: parseFloat(document.getElementById('plan-daily-limit').value) || 0,
             monthly_limit_gb: parseFloat(document.getElementById('plan-monthly-limit').value) || 0
         };
-        const res = await fetch(id ? `/api/admin/subscriptions/plans/${id}` : '/api/admin/subscriptions/plans', {
-            method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
-        });
-        if (res.ok) { closePlanModal(); fetchPlans(); } else alert('Failed to save plan.');
+        try {
+            const res = await fetch(id ? `/api/admin/subscriptions/plans/${id}` : '/api/admin/subscriptions/plans', {
+                method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+            });
+            if (res.ok) { closePlanModal(); fetchPlans(); showToast('Plan saved successfully.', 'success'); } else showToast('Failed to save plan.', 'error');
+        } catch (err) {
+            console.error(err);
+            showToast('Failed to save plan.', 'error');
+        } finally {
+            setButtonLoading(submitBtn, false);
+        }
     }
 
-    async function deletePlan(id) {
-        if (!confirm('Delete this plan?')) return;
-        const res = await fetch(`/api/admin/subscriptions/plans/${id}`, { method: 'DELETE' });
-        if (res.ok) fetchPlans(); else alert('Failed to delete.');
+    async function deletePlan(btn, id, confirmed = false) {
+        setButtonLoading(btn, true, "Deleting...");
+        if (!confirmed) { setButtonLoading(btn, false); openConfirmModal('Delete this plan?', () => deletePlan(btn, id, true)); return; }
+        try {
+            const res = await fetch(`/api/admin/subscriptions/plans/${id}`, { method: 'DELETE' });
+            if (res.ok) { fetchPlans(); showToast('Plan deleted successfully.', 'success'); } else showToast('Failed to delete.', 'error');
+        } catch (err) {
+            console.error(err);
+            showToast('Failed to delete.', 'error');
+        } finally {
+            setButtonLoading(btn, false);
+        }
     }
 
     // ---- Subscribers with Search + Pagination ----
@@ -282,12 +301,12 @@
 
         const tbody = document.getElementById('subscribers-tbody');
         if (!slice.length) {
-            tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-gray-500">No users match your search.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-12 text-center text-[#9ca3af] opacity-70"><i class=\"fas fa-inbox mr-2\"></i>No users match your search.</td></tr>';
             return;
         }
 
         tbody.innerHTML = slice.map(u => {
-            const statusColor = u.subscription_status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+            const statusColor = u.subscription_status === 'active' ? 'bg-green-500/20 text-green-300' : (u.subscription_status === 'trial' ? 'bg-yellow-500/20 text-yellow-300' : 'bg-red-500/20 text-red-300');
             let expiry = 'N/A';
             if (u.subscription_expiry) {
                 const d = new Date(u.subscription_expiry);
@@ -298,23 +317,23 @@
             if (u.username) name += (name ? ' ' : '') + `(@${u.username})`;
             if (!name) name = `User ${u._id}`;
             const safeName = name.replace(/'/g, "\\'");
-            return `<tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+            return `<tr class="border-b border-white/5 hover:bg-white/5 hover:scale-[1.01] transition-all duration-200">
         <td class="px-6 py-4">
-          <div class="font-medium text-gray-900 dark:text-gray-100">${name}</div>
-          <div class="text-xs text-gray-500">ID: ${u._id}</div>
+          <div class="font-medium text-[#e5e7eb]">${name}</div>
+          <div class="text-xs text-[#9ca3af]">ID: ${u._id}</div>
         </td>
         <td class="px-6 py-4 text-center">
-          <span class="px-2 py-1 rounded ${statusColor} text-xs font-bold uppercase tracking-wider">${u.subscription_status}</span>
+          <span class="px-3 py-1 rounded-full ${statusColor} text-xs font-semibold uppercase tracking-wider">${u.subscription_status}</span>
         </td>
         <td class="px-6 py-4 text-center text-sm">${expiry}</td>
         <td class="px-6 py-4 text-right">
           <div class="flex justify-end gap-2 flex-wrap">
             <button onclick="openUserModal(${u._id}, '${safeName}', 'extend')"
-              class="bg-green-50 text-green-600 hover:bg-green-100 px-2 py-1 rounded text-xs font-medium border border-green-200">Extend</button>
+              class="bg-white/5 text-green-300 hover:bg-white/10 px-3 py-1 rounded-xl text-xs font-medium transition-all duration-300 hover:scale-[1.05]">Extend</button>
             <button onclick="openUserModal(${u._id}, '${safeName}', 'reduce')"
-              class="bg-yellow-50 text-yellow-600 hover:bg-yellow-100 px-2 py-1 rounded text-xs font-medium border border-yellow-200">Reduce</button>
+              class="bg-white/5 text-yellow-300 hover:bg-white/10 px-3 py-1 rounded-xl text-xs font-medium transition-all duration-300 hover:scale-[1.05]">Reduce</button>
             <button onclick="openUserModal(${u._id}, '${safeName}', 'delete')"
-              class="bg-red-50 text-red-600 hover:bg-red-100 px-2 py-1 rounded text-xs font-medium border border-red-200">Revoke</button>
+              class="bg-white/5 text-red-300 hover:bg-white/10 px-3 py-1 rounded-xl text-xs font-medium transition-all duration-300 hover:scale-[1.05]">Revoke</button>
           </div>
         </td>
       </tr>`;
@@ -324,8 +343,7 @@
     function subChangePage(dir) { subPage += dir; renderSubPage(); }
 
     async function fetchSubscribers() {
-        document.getElementById('subscribers-tbody').innerHTML =
-            '<tr><td colspan="4" class="px-6 py-8 text-center text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i> Loading...</td></tr>';
+        document.getElementById('subscribers-tbody').innerHTML = renderSkeletonRows(6, ['w-40','w-24','w-36','w-44']);
         try {
             const res = await fetch('/api/admin/subscriptions/users');
             if (res.ok) {
@@ -340,7 +358,7 @@
     function openUserModal(userId, userName, action) {
         document.getElementById('manage-user-id').value = userId;
         document.getElementById('manage-action').value = action;
-        let title = '', desc = '', btnColor = 'bg-blue-600 hover:bg-blue-700', showDays = true;
+        let title = '', desc = '', btnColor = 'bg-[#8b5cf6] hover:bg-[#7c4cf4] shadow-[0_0_20px_rgba(139,92,246,0.3)]', showDays = true;
         if (action === 'extend') {
             title = 'Extend Subscription'; desc = `Add days to <b>${userName}</b>'s subscription.`;
             document.getElementById('days-action-label').innerText = 'Add';
@@ -354,7 +372,7 @@
         document.getElementById('user-modal-title').innerText = title;
         document.getElementById('user-modal-desc').innerHTML = desc;
         document.getElementById('days-input-group').className = showDays ? 'mb-4' : 'hidden';
-        document.getElementById('btn-user-save').className = `${btnColor} text-white px-4 py-2 rounded shadow`;
+        document.getElementById('btn-user-save').className = `${btnColor} text-white px-4 py-2 rounded-xl transition-all duration-300 hover:scale-[1.05]`;
         if (!showDays) { document.getElementById('manage-days').value = 0; document.getElementById('manage-days').removeAttribute('required'); }
         else document.getElementById('manage-days').setAttribute('required', 'required');
         document.getElementById('user-modal').classList.remove('hidden');
@@ -364,14 +382,23 @@
 
     async function submitUserForm(e) {
         e.preventDefault();
+        const submitBtn = e.submitter;
+        setButtonLoading(submitBtn, true, "Saving...");
         const userId = document.getElementById('manage-user-id').value;
         const action = document.getElementById('manage-action').value;
         const days = document.getElementById('manage-days').value;
-        const res = await fetch(`/api/admin/subscriptions/users/${userId}/manage`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action, days: parseInt(days) || 0 })
-        });
-        if (res.ok) { closeUserModal(); fetchSubscribers(); } else alert('Failed to update user.');
+        try {
+            const res = await fetch(`/api/admin/subscriptions/users/${userId}/manage`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action, days: parseInt(days) || 0 })
+            });
+            if (res.ok) { closeUserModal(); fetchSubscribers(); showToast('Subscription updated successfully.', 'success'); } else showToast('Failed to update user.', 'error');
+        } catch (err) {
+            console.error(err);
+            showToast('Failed to update user.', 'error');
+        } finally {
+            setButtonLoading(submitBtn, false);
+        }
     }
 
     document.addEventListener('DOMContentLoaded', () => { fetchPlans(); fetchSubscribers(); });
